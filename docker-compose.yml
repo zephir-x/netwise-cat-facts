@@ -1,0 +1,24 @@
+﻿services:
+  catfacts_api:
+    image: catfacts_api_image
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: catfacts_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5041:8080"
+    restart: unless-stopped
+
+  catfacts_frontend:
+    image: catfacts_frontend_image
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: catfacts_frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - catfacts_api
+    restart: unless-stopped

@@ -33,9 +33,7 @@ export default function App() {
 
     // Easter Egg Handler
     const handleEasterEgg = () => {
-        toast.success('Thanks for checking out the app! Redirecting...', {
-            icon: '🚀'
-        });
+        toast.success('Thanks for checking out the app! Redirecting...');
         setTimeout(() => {
             window.open('https://kacpergumulak.pl/', '_blank');
         }, 3000);
