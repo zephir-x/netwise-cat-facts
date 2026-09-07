@@ -20,6 +20,9 @@ builder.Services.AddCors(options =>
 // If it were Transient/Scoped, every request would get a NEW semaphore, entirely defeating the purpose of the lock.
 builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
 
+// We are registering our cloud service.
+builder.Services.AddTransient<ICloudBackupService, CloudBackupService>();
+
 // We use Typed Clients for HttpClient. This is the modern, safe way to handle HTTP requests in .NET.
 // It prevents socket exhaustion issues and allows centralized configuration (like setting the BaseAddress).
 builder.Services.AddHttpClient<ICatFactProvider, CatFactProvider>(client =>
@@ -35,6 +38,8 @@ app.UseCors("AllowFrontend");
 app.MapGet("/api/facts/random", async (
     ICatFactProvider catFactProvider, 
     IFileStorage fileStorage, 
+    ICloudBackupService cloudBackupService,
+    IConfiguration configuration,
     CancellationToken cancellationToken) =>
 {
     // Step 1: Fetch the data
@@ -49,7 +54,11 @@ app.MapGet("/api/facts/random", async (
     // Step 3: Persist the data locally
     await fileStorage.AppendFactAsync(response.Fact, cancellationToken);
 
-    // Step 4: Return success to the client
+    // Step 4: Backup to cloud
+    var localFilePath = configuration["Storage:LocalFilePath"] ?? "facts.txt";
+    await cloudBackupService.UploadFileAsync(localFilePath, cancellationToken);
+    
+    // Step 5: Return success to the client
     return Results.Ok(response);
 });
 

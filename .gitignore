@@ -4,3 +4,11 @@
 # .NET Core
 backend/bin/
 backend/obj/
+backend/appsettings.Development.json
+
+# Terraform
+**/.terraform/*
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
