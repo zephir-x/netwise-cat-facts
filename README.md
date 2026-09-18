@@ -92,12 +92,30 @@ cd netwise-cat-facts
 cd backend
 ```
 
-3. Open `appsettings.Development.json` (or set the environment variable in docker-compose) and input your Azure Storage Account connection string:
+3. Create or edit the `appsettings.Development.json` file and input your Azure Storage Account connection string:
 
 ```json
-"ConnectionStrings": {
-"AzureStorage": "DefaultEndpointsProtocol=https;AccountName=YOUR_ACCOUNT;AccountKey=YOUR_KEY;EndpointSuffix=core.windows.net"
+{
+  "Azure": {
+    "StorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=YOUR_ACCOUNT;AccountKey=YOUR_KEY;EndpointSuffix=core.windows.net"
+  }
 }
+```
+
+**How to obtain your Azure Storage Connection String?**
+
+*Option A: Via Azure Portal*
+1. Log in to the Azure Portal (https://portal.azure.com/).
+2. Navigate to **Storage accounts** and select your provisioned account.
+3. In the left menu under **Security + networking**, click **Access keys**.
+4. Click **Show** next to `Connection string` (under key1) and copy the value.
+
+*Option B: Via Terraform (IaC)*
+If you provisioned the infrastructure using the included Terraform scripts, you can securely extract the connection string directly from the CLI:
+
+```bash
+cd infrastructure
+terraform output -raw storage_connection_string
 ```
 
 *(Note: The app runs perfectly without Azure credentials. It will simply save the data locally to `cat_facts_database.txt` and log a graceful skip message for the cloud sync).*
@@ -108,6 +126,8 @@ From the root directory, simply run:
 ```bash
 docker compose up -d --build
 ```
+
+*(Note: Docker Compose will automatically create a `./data` volume directory on your host machine to securely persist the `cat_facts_database.txt` file outside the container's volatile lifecycle).*
 
 **4. Access the Application**  
 - Frontend UI: Open your browser and navigate to `http://localhost:5173`

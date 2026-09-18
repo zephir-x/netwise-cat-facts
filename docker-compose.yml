@@ -7,8 +7,11 @@
     container_name: catfacts_api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - Storage__LocalFilePath=data/cat_facts_database.txt
     ports:
       - "5041:8080"
+    volumes:
+      - ./data:/app/data
     restart: unless-stopped
 
   catfacts_frontend:

@@ -55,11 +55,17 @@ app.MapGet("/api/facts/random", async (
     await fileStorage.AppendFactAsync(response.Fact, cancellationToken);
 
     // Step 4: Backup to cloud
-    var localFilePath = configuration["Storage:LocalFilePath"] ?? "facts.txt";
+    var localFilePath = configuration["Storage:LocalFilePath"] ?? "cat_facts_database.txt";
     await cloudBackupService.UploadFileAsync(localFilePath, cancellationToken);
     
-    // Step 5: Return success to the client
-    return Results.Ok(response);
+    // Step 5: Return success to the client with cloud sync status
+    var isAzureConfigured = !string.IsNullOrWhiteSpace(configuration["Azure:StorageConnectionString"]);
+    return Results.Ok(new 
+    { 
+        fact = response.Fact, 
+        length = response.Length, 
+        isSyncedWithAzure = isAzureConfigured 
+    });
 });
 
 app.Run();

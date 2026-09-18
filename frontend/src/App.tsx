@@ -11,6 +11,7 @@ import * as React from "react";
 interface CatFactResponse {
     fact: string;
     length: number;
+    isSyncedWithAzure: boolean;
 }
 
 export default function App() {
@@ -24,7 +25,12 @@ export default function App() {
         },
         onSuccess: (data) => {
             setCurrentFact(data.fact);
-            toast.success('Fact acquired and synced with Azure!');
+            
+            if (data.isSyncedWithAzure) {
+                toast.success('Fact acquired and synced with Azure!');
+            } else {
+                toast.success('Fact acquired and saved locally.');
+            }
         },
         onError: () => {
             toast.error('Failed to fetch a cat fact. Check the connection.');

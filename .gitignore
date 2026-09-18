@@ -12,3 +12,6 @@ backend/appsettings.Development.json
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
+
+# Database File
+data/
